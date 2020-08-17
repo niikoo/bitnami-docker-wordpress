@@ -18,7 +18,7 @@ RUN bitnami-pkg install libphp-7.4.9-1 --checksum a68cc1877a5eb0b7567b2b4f02da1c
 RUN bitnami-pkg unpack wordpress-5.5.0-0 --checksum 690cb641a0b1c3482b9adbbdb26c550fe8fc3b83493eaa65702cadeef3d52123
 RUN bitnami-pkg install tini-0.19.0-0 --checksum 9a8ae20be31a518f042fcec359f2cf35bfdb4e2a56f2fa8ff9ef2ecaf45da80c
 RUN bitnami-pkg install gosu-1.12.0-1 --checksum 51cfb1b7fd7b05b8abd1df0278c698103a9b1a4964bdacd87ca1d5c01631d59c
-RUN apt-get update && apt-get upgrade -y && \
+RUN apt-get update && apt-get upgrade -y && apt-get install nano && \
     rm -r /var/lib/apt/lists /var/cache/apt/archives
 RUN ln -sf /dev/stdout /opt/bitnami/apache/logs/access_log && \
     ln -sf /dev/stderr /opt/bitnami/apache/logs/error_log
