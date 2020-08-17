@@ -71,7 +71,14 @@ ENV ALLOW_EMPTY_PASSWORD="no" \
     WORDPRESS_TABLE_PREFIX="wp_" \
     WORDPRESS_USERNAME="user"
 
-EXPOSE 8080 8443
+# Enable XDebug
+ENV PHP_INI_ACTIVE=/opt/bitnami/php/lib/php.ini
+RUN sed -i -e 's/;xdebug.remote_port = 9000*/xdebug.remote_port = 9001/g' $PHP_INI_ACTIVE
+RUN sed -i -e 's/;xdebug.*/xdebug./g' $PHP_INI_ACTIVE
+RUN sed -i -e 's/;[XDebug] /[XDebug] /g' $PHP_INI_ACTIVE
+RUN sed -i -e 's/;zend_extension = xdebug*/zend_extension = xdebug/g' $PHP_INI_ACTIVE
+
+EXPOSE 8080 8443 9001
 
 USER 1001
 ENTRYPOINT [ "/app-entrypoint.sh" ]
