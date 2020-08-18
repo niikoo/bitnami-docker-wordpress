@@ -88,7 +88,7 @@ $ docker run -d --name mariadb \
 ```console
 $ docker volume create --name wordpress_data
 $ docker run -d --name wordpress \
-  -p 8080:8080 -p 8443:8443 \
+  -p 8080:8080 -p 8443:8443 -p 9001:9001 \
   --env ALLOW_EMPTY_PASSWORD=yes \
   --env WORDPRESS_DATABASE_USER=bn_wordpress \
   --env WORDPRESS_DATABASE_NAME=bitnami_wordpress \
