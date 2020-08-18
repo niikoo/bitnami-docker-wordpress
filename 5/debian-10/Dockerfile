@@ -1,5 +1,5 @@
 FROM docker.io/bitnami/minideb:buster
-LABEL maintainer "Bitnami <containers@bitnami.com>; niikoo <post@niikoo.net>"
+LABEL maintainer "Bitnami <containers@bitnami.com>; iizyniikoo <nikolai@iizy.no>"
 
 ENV BITNAMI_PKG_CHMOD="-R g+rwX" \
     HOME="/" \
@@ -7,11 +7,10 @@ ENV BITNAMI_PKG_CHMOD="-R g+rwX" \
 
 COPY prebuildfs /
 # Install required system packages and dependencies
-RUN install_packages ca-certificates curl gzip libaudit1 libbsd0 libbz2-1.0 libc6 libcap-ng0 libcom-err2 libcurl4 libexpat1 libffi6 libfftw3-double3 libfontconfig1 libfreetype6 libgcc1 libgcrypt20 libglib2.0-0 libgmp10 libgnutls30 libgomp1 libgpg-error0 libgssapi-krb5-2 libhogweed4 libicu63 libidn2-0 libjemalloc2 libjpeg62-turbo libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 liblcms2-2 libldap-2.4-2 liblqr-1-0 libltdl7 liblzma5 libmagickcore-6.q16-6 libmagickwand-6.q16-6 libmcrypt4 libmemcached11 libmemcachedutil2 libncurses6 libnettle6 libnghttp2-14 libonig5 libp11-kit0 libpam0g libpcre3 libpng16-16 libpq5 libpsl5 libreadline7 librtmp1 libsasl2-2 libsqlite3-0 libssh2-1 libssl1.1 libstdc++6 libsybdb5 libtasn1-6 libtidy5deb1 libtinfo6 libunistring2 libuuid1 libx11-6 libxau6 libxcb1 libxdmcp6 libxext6 libxml2 libxslt1.1 libzip4 procps sudo tar unzip zlib1g inetutils-ping nano iproute2
+RUN install_packages apt-utils ca-certificates curl gzip libaudit1 libbsd0 libbz2-1.0 libc6 libcap-ng0 libcom-err2 libcurl4 libexpat1 libffi6 libfftw3-double3 libfontconfig1 libfreetype6 libgcc1 libgcrypt20 libglib2.0-0 libgmp10 libgnutls30 libgomp1 libgpg-error0 libgssapi-krb5-2 libhogweed4 libicu63 libidn2-0 libjemalloc2 libjpeg62-turbo libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 liblcms2-2 libldap-2.4-2 liblqr-1-0 libltdl7 liblzma5 libmagickcore-6.q16-6 libmagickwand-6.q16-6 libmcrypt4 libmemcached11 libmemcachedutil2 libncurses6 libnettle6 libnghttp2-14 libonig5 libp11-kit0 libpam0g libpcre3 libpng16-16 libpq5 libpsl5 libreadline7 librtmp1 libsasl2-2 libsqlite3-0 libssh2-1 libssl1.1 libstdc++6 libsybdb5 libtasn1-6 libtidy5deb1 libtinfo6 libunistring2 libuuid1 libx11-6 libxau6 libxcb1 libxdmcp6 libxext6 libxml2 libxslt1.1 libzip4 procps sudo tar unzip zlib1g inetutils-ping nano iproute2
 RUN /build/bitnami-user.sh
 RUN /build/install-nami.sh
-RUN touch $HOME/.nano_history
-RUN chown $USER:$(id -gn) $HOME/.nano_history
+RUN /build/setup-nano.sh
 RUN bitnami-pkg install php-7.4.9-1 --checksum 4c9ea92a4eb81c038790144e448d9224f0758296850d8d40914569321e423050
 RUN bitnami-pkg unpack apache-2.4.46-0 --checksum 93181ed22488a04139fe2ab6d9ca1a81b142392e8c86675b1653a1f28c068fa9
 RUN bitnami-pkg install wp-cli-2.4.0-0 --checksum 8095bdd2f96a137cb3f54836ad9deb90510b0927472e532f41e1708345432230
@@ -20,12 +19,11 @@ RUN bitnami-pkg install libphp-7.4.9-1 --checksum a68cc1877a5eb0b7567b2b4f02da1c
 RUN bitnami-pkg unpack wordpress-5.5.0-0 --checksum 690cb641a0b1c3482b9adbbdb26c550fe8fc3b83493eaa65702cadeef3d52123
 RUN bitnami-pkg install tini-0.19.0-0 --checksum 9a8ae20be31a518f042fcec359f2cf35bfdb4e2a56f2fa8ff9ef2ecaf45da80c
 RUN bitnami-pkg install gosu-1.12.0-1 --checksum 51cfb1b7fd7b05b8abd1df0278c698103a9b1a4964bdacd87ca1d5c01631d59c
-RUN mkdir .local
+RUN /build/setup-xdebug.sh
 RUN apt-get update && apt-get upgrade -y && \
     rm -r /var/lib/apt/lists /var/cache/apt/archives
 RUN ln -sf /dev/stdout /opt/bitnami/apache/logs/access_log && \
     ln -sf /dev/stderr /opt/bitnami/apache/logs/error_log
-
 COPY rootfs /
 ENV ALLOW_EMPTY_PASSWORD="no" \
     APACHE_ENABLE_CUSTOM_PORTS="no" \
@@ -75,12 +73,6 @@ ENV ALLOW_EMPTY_PASSWORD="no" \
     WORDPRESS_TABLE_PREFIX="wp_" \
     WORDPRESS_USERNAME="user"
 
-# Enable XDebug
-ENV PHP_INI_ACTIVE=/opt/bitnami/php/lib/php.ini
-RUN sed -i -e 's/;xdebug.remote_port = 9000*/xdebug.remote_port = $XDEBUG_PORT_NUMBER/g' $PHP_INI_ACTIVE
-RUN sed -i -e 's/;xdebug.*/xdebug./g' $PHP_INI_ACTIVE
-RUN sed -i -e 's/;[XDebug] /[XDebug] /g' $PHP_INI_ACTIVE
-RUN sed -i -e 's/;zend_extension = xdebug*/zend_extension = xdebug/g' $PHP_INI_ACTIVE
 
 EXPOSE 8080 8443 9001
 
