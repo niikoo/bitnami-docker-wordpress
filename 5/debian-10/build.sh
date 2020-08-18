@@ -1,2 +1,3 @@
-echo Building iizyniikoo/wordpress-xdebug:latest
-docker build -t iizyniikoo/wordpress-xdebug:latest . -f Dockerfile
+echo Building iizy/wordpress-xdebug:latest
+docker build -t iizy/wordpress-xdebug:latest . -f Dockerfile
+docker push iizy/wordpress-xdebug:latest
