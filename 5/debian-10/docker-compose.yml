@@ -9,7 +9,7 @@ services:
       - MARIADB_DATABASE=bitnami_wordpress
       - ALLOW_EMPTY_PASSWORD=yes
   wordpress:
-    image: 'iizyniikoo/wordpress-xdebug:latest'
+    image: 'iizy/wordpress-xdebug:latest'
     ports:
       - '8080:8080'
       - '8443:8443'
