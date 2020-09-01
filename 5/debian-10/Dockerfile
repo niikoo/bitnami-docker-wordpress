@@ -3,14 +3,17 @@ LABEL maintainer "Bitnami <containers@bitnami.com>; iizyniikoo <nikolai@iizy.no>
 
 ENV BITNAMI_PKG_CHMOD="-R g+rwX" \
     HOME="/" \
-    PATH="/opt/bitnami/php/bin:/opt/bitnami/php/sbin:/opt/bitnami/apache/bin:/opt/bitnami/wp-cli/bin:/opt/bitnami/mysql/bin:/opt/bitnami/common/bin:/opt/bitnami/nami/bin:$PATH"
+    PATH="/opt/bitnami/php/bin:/opt/bitnami/php/sbin:/opt/bitnami/apache/bin:/opt/bitnami/wp-cli/bin:/opt/bitnami/mysql/bin:/opt/bitnami/common/bin:/opt/bitnami/nami/bin:$PATH" \
+    BITNAMI_PKG_CHOWN="-R 1001:1001"
 
 COPY prebuildfs /
+RUN useradd -r -u 1001 -U 1001
 # Install required system packages and dependencies
 RUN install_packages apt-utils ca-certificates curl gzip libaudit1 libbsd0 libbz2-1.0 libc6 libcap-ng0 libcom-err2 libcurl4 libexpat1 libffi6 libfftw3-double3 libfontconfig1 libfreetype6 libgcc1 libgcrypt20 libglib2.0-0 libgmp10 libgnutls30 libgomp1 libgpg-error0 libgssapi-krb5-2 libhogweed4 libicu63 libidn2-0 libjemalloc2 libjpeg62-turbo libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 liblcms2-2 libldap-2.4-2 liblqr-1-0 libltdl7 liblzma5 libmagickcore-6.q16-6 libmagickwand-6.q16-6 libmcrypt4 libmemcached11 libmemcachedutil2 libncurses6 libnettle6 libnghttp2-14 libonig5 libp11-kit0 libpam0g libpcre3 libpng16-16 libpq5 libpsl5 libreadline7 librtmp1 libsasl2-2 libsqlite3-0 libssh2-1 libssl1.1 libstdc++6 libsybdb5 libtasn1-6 libtidy5deb1 libtinfo6 libunistring2 libuuid1 libx11-6 libxau6 libxcb1 libxdmcp6 libxext6 libxml2 libxslt1.1 libzip4 procps sudo tar unzip zlib1g inetutils-ping nano iproute2
 RUN /build/bitnami-user.sh
 RUN /build/install-nami.sh
 RUN /build/setup-nano.sh
+RUN /build/allow-ping.sh
 RUN bitnami-pkg install php-7.4.9-1 --checksum 4c9ea92a4eb81c038790144e448d9224f0758296850d8d40914569321e423050
 RUN bitnami-pkg unpack apache-2.4.46-0 --checksum 93181ed22488a04139fe2ab6d9ca1a81b142392e8c86675b1653a1f28c068fa9
 RUN bitnami-pkg install wp-cli-2.4.0-0 --checksum 8095bdd2f96a137cb3f54836ad9deb90510b0927472e532f41e1708345432230
@@ -74,7 +77,7 @@ ENV ALLOW_EMPTY_PASSWORD="no" \
     WORDPRESS_USERNAME="user"
 
 
-EXPOSE 8080 8443 9001
+EXPOSE 8080 8443
 
 USER 1001
 ENTRYPOINT [ "/app-entrypoint.sh" ]

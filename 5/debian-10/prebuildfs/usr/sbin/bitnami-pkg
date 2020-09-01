@@ -216,5 +216,6 @@ if [ "$BITNAMI_PKG_CHMOD" ]; then
   cd $HOME
   DIRS+=" $(nami inspect $PACKAGE_NAME | grep -e '"installdir"' | cut -f4 -d\")"
   info "Fixing permissions: chmod $BITNAMI_PKG_CHMOD $DIRS"
+  info "Fixing permissions: chown $BITNAMI_PKG_CHOWN $DIRS"
   chmod $BITNAMI_PKG_CHMOD $DIRS
 fi
