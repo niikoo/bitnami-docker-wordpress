@@ -6,6 +6,10 @@ services:
       - 'mariadb_data:/bitnami/mariadb'
     environment:
       - MARIADB_USER=bn_wordpress
+      - MARIADB_HOST=mariadb
+      - MARIADB_PORT_NUMBER=3306
+      - MARIADB_ROOT_PASSWORD=
+      - MARIADB_ROOT_USER=root
       - MARIADB_DATABASE=bitnami_wordpress
       - ALLOW_EMPTY_PASSWORD=yes
   wordpress:
