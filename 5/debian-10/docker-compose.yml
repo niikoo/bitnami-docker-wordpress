@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   mariadb:
     image: 'docker.io/bitnami/mariadb:10.3-debian-10'
@@ -28,6 +28,8 @@ services:
       - WORDPRESS_DATABASE_USER=bn_wordpress
       - WORDPRESS_DATABASE_NAME=bitnami_wordpress
       - ALLOW_EMPTY_PASSWORD=yes
+    cap_add:
+      - ALL
 volumes:
   mariadb_data:
     driver: local
